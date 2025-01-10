@@ -19,6 +19,7 @@ jobs:
 
   pull-image:
     runs-on: ubuntu-latest
+    needs: [login]
     steps:     
       - name: Build and push Docker image
         run: |
@@ -27,6 +28,7 @@ jobs:
 
   ssh-connect-ec2_01:
     runs-on: ubuntu-latest
+    needs: [pull-image]
     steps: 
       - name: SSH into EC2 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
@@ -56,6 +58,7 @@ jobs:
 
   ssh-connect-ec2_02:
     runs-on: ubuntu-latest
+    needs: [pull-image]
     steps: 
       - name: SSH into EC2 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
