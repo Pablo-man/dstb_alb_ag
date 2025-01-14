@@ -38,6 +38,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY_QA }}
           script: |
+            ls
             ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
       - name: SSH into QA02 and pull the latest Docker image
