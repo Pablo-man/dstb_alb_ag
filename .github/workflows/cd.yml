@@ -28,7 +28,9 @@ jobs:
   QA_pipeline:
     if: github.ref == 'refs/heads/QA'
     runs-on: ubuntu-latest
-    steps: 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: SSH into QA01 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
         with:
