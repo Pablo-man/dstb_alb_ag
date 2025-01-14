@@ -31,6 +31,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Copy docker_setup.sh to QA01
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST_QA01 }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY_QA }}
+          source: ./docker_setup.sh
+          target: ~/docker_setup.sh
+
       - name: SSH into QA01 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -38,8 +48,17 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY_QA }}
           script: |
-            ls
-            ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
+            chmod +x ~/docker_setup.sh
+            ~/docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
+
+      - name: Copy docker_setup.sh to QA01
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST_QA02 }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY_QA }}
+          source: ./docker_setup.sh
+          target: ~/docker_setup.sh
 
       - name: SSH into QA02 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
@@ -48,7 +67,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY_QA }}
           script: |
-            ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
+            chmod +x ~/docker_setup.sh
+            ~/docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
   PRD_pipeline:
     if: github.event_name == 'pull_request' && github.base_ref == 'main' 
