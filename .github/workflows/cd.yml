@@ -3,6 +3,9 @@ name: EC2 deploy from docker
 on:
   push:
     branches: ["QA"]
+  
+  pull_request:
+    branches: [main]
 
 jobs:
   login-and-pull:
@@ -22,62 +25,64 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/qa:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
-  ssh-connect-ec2_01:
+  QA_pipeline:
+    if: github.ref == 'refs/heads/QA'
     runs-on: ubuntu-latest
-    needs: [login-and-pull]
     steps: 
-      - name: SSH into EC2 and pull the latest Docker image
+      - name: SSH into QA01 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST01 }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            if ! command -v docker &> /dev/null; then
-              sudo apt update
-              sudo apt install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              sudo systemctl restart docker
-            else
-              echo "Docker install"
-            fi
-            
-            if ! sudo systemctl is-active --quiet docker; then
-              sudo systemctl start docker
-            fi  
+            ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/qa:latest
-            sudo docker stop $(docker ps -q) || true
-            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/qa:latest
-
-  ssh-connect-ec2_02:
-    runs-on: ubuntu-latest
-    needs: [login-and-pull]
-    steps: 
-      - name: SSH into EC2 and pull the latest Docker image
+      - name: SSH into QA02 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST02 }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            if ! command -v docker &> /dev/null; then
-              sudo apt update
-              sudo apt install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              sudo systemctl restart docker
-            else
-              echo "Docker install"
-            fi
-            
-            if ! sudo systemctl is-active --quiet docker; then
-              sudo systemctl start docker
-            fi  
+            ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/qa:latest
-            sudo docker stop $(docker ps -q) || true
-            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/qa:latest
+  PRD_pipeline:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main' 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: SSH into PRD01 and pull the latest Docker image
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_PRD01 }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEYPRD }}
+          script: |
+            ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
+
+      - name: SSH into PRD03 and pull the latest Docker image
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_PRD02 }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEYPRD }}
+          script: |
+            ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
+
+      - name: SSH into PRD04 and pull the latest Docker image
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_PRD03 }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEYPRD }}
+          script: |
+            ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
+
+      - name: SSH into PRD02 and pull the latest Docker image
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_PRD04 }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEYPRD }}
+          script: |
+            ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
