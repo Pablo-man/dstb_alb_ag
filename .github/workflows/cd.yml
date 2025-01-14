@@ -32,18 +32,18 @@ jobs:
       - name: SSH into QA01 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.EC2_HOST01 }}
+          host: ${{ secrets.EC2_HOST_QA01 }}
           username: ubuntu
-          key: ${{ secrets.EC2_KEY }}
+          key: ${{ secrets.EC2_KEY_QA }}
           script: |
             ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
       - name: SSH into QA02 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.EC2_HOST02 }}
+          host: ${{ secrets.EC2_HOST_QA02 }}
           username: ubuntu
-          key: ${{ secrets.EC2_KEY }}
+          key: ${{ secrets.EC2_KEY_QA }}
           script: |
             ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
@@ -54,35 +54,35 @@ jobs:
       - name: SSH into PRD01 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.EC2_PRD01 }}
+          host: ${{ secrets.EC2_HOST_PRD01 }}
           username: ubuntu
-          key: ${{ secrets.EC2_KEYPRD }}
+          key: ${{ secrets.EC2_KEY_PRD }}
           script: |
             ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
       - name: SSH into PRD03 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.EC2_PRD02 }}
+          host: ${{ secrets.EC2_HOST_PRD02 }}
           username: ubuntu
-          key: ${{ secrets.EC2_KEYPRD }}
+          key: ${{ secrets.EC2_KEY_PRD }}
           script: |
             ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
       - name: SSH into PRD04 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.EC2_PRD03 }}
+          host: ${{ secrets.EC2_HOST_PRD03 }}
           username: ubuntu
-          key: ${{ secrets.EC2_KEYPRD }}
+          key: ${{ secrets.EC2_KEY_PRD }}
           script: |
             ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
       - name: SSH into PRD02 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.EC2_PRD04 }}
+          host: ${{ secrets.EC2_HOST_PRD04 }}
           username: ubuntu
-          key: ${{ secrets.EC2_KEYPRD }}
+          key: ${{ secrets.EC2_KEY_PRD }}
           script: |
             ./docker_setup.sh ${{ secrets.DOCKER_USERNAME }}/qa:latest
