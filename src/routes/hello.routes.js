@@ -5,7 +5,7 @@ const router = Router()
 
 router.get('/', (req, res)=>{
     const hostname = os.hostname();
-    res.send(`Hello you :) ${hostname}`)
+    res.send(`Hello you XD :) ${hostname}`)
 })
 
 export default router

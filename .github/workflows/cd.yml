@@ -7,7 +7,8 @@ on:
     branches: ["main"]
 
 jobs:
-  login-and-pull:
+  login-and-pull-qa:
+    if: github.ref == 'refs/heads/QA'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -24,189 +25,82 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/qa:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
-  ssh-connect-ec2_QA01:
-    if: github.ref == 'refs/heads/QA'
-    runs-on: ubuntu-latest
-    needs: [login-and-pull]
-    steps: 
-      - name: SSH into EC2 and pull the latest Docker image
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST_QA01 }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY_QA }}
-          script: |
-            if ! command -v docker &> /dev/null; then
-              sudo apt update
-              sudo apt install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              sudo systemctl restart docker
-            else
-              echo "Docker install"
-            fi
-            
-            if ! sudo systemctl is-active --quiet docker; then
-              sudo systemctl start docker
-            fi  
-
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/qa:latest
-            sudo docker stop $(docker ps -q) || true
-            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/qa:latest
-
-  ssh-connect-ec2_QA02:
-    if: github.ref == 'refs/heads/QA'
-    runs-on: ubuntu-latest
-    needs: [login-and-pull]
-    steps: 
-      - name: SSH into EC2 and pull the latest Docker image
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST_QA02 }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY_QA }}
-          script: |
-            if ! command -v docker &> /dev/null; then
-              sudo apt update
-              sudo apt install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              sudo systemctl restart docker
-            else
-              echo "Docker install"
-            fi
-            
-            if ! sudo systemctl is-active --quiet docker; then
-              sudo systemctl start docker
-            fi  
-
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/qa:latest
-            sudo docker stop $(docker ps -q) || true
-            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/qa:latest
-
-  ssh-connect-ec2_PRD01:
+  login-and-pull-main:
     if: github.event_name == 'pull_request' && github.base_ref == 'main' 
     runs-on: ubuntu-latest
-    needs: [login-and-pull]
-    steps: 
-      - name: SSH into EC2 and pull the latest Docker image
-        uses: appleboy/ssh-action@v1.2.0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.EC2_HOST_PRD01 }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY_PRD }}
-          script: |
-            if ! command -v docker &> /dev/null; then
-              sudo apt update
-              sudo apt install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              sudo systemctl restart docker
-            else
-              echo "Docker install"
-            fi
-            
-            if ! sudo systemctl is-active --quiet docker; then
-              sudo systemctl start docker
-            fi  
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+ 
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/prd:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/prd:latest
 
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/prd:latest
-            sudo docker stop $(docker ps -q) || true
-            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/prd:latest
-
-  ssh-connect-ec2_PRD02:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main' 
+  ssh-connect-ec2-QA01:
+    needs: [login-and-pull-qa]
     runs-on: ubuntu-latest
-    needs: [login-and-pull]
-    steps: 
-      - name: SSH into EC2 and pull the latest Docker image
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST_PRD02 }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY_PRD }}
-          script: |
-            if ! command -v docker &> /dev/null; then
-              sudo apt update
-              sudo apt install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              sudo systemctl restart docker
-            else
-              echo "Docker install"
-            fi
-            
-            if ! sudo systemctl is-active --quiet docker; then
-              sudo systemctl start docker
-            fi  
+    uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker: qa
+    secrets:
+      ec2_host: ${{ secrets.EC2_HOST_QA01 }}
+      ec2_key: ${{ secrets.EC2_KEY_QA }}
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
 
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/prd:latest
-            sudo docker stop $(docker ps -q) || true
-            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/prd:latest
-
-  ssh-connect-ec2_PRD03:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main' 
+  ssh-connect-ec2-QA02:
+    needs: [login-and-pull-qa]
     runs-on: ubuntu-latest
-    needs: [login-and-pull]
-    steps: 
-      - name: SSH into EC2 and pull the latest Docker image
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST_PRD03 }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY_PRD }}
-          script: |
-            if ! command -v docker &> /dev/null; then
-              sudo apt update
-              sudo apt install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              sudo systemctl restart docker
-            else
-              echo "Docker install"
-            fi
-            
-            if ! sudo systemctl is-active --quiet docker; then
-              sudo systemctl start docker
-            fi  
+    uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker: qa
+    secrets:
+      ec2_host: ${{ secrets.EC2_HOST_QA02 }}
+      ec2_key: ${{ secrets.EC2_KEY_QA }}
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
 
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/prd:latest
-            sudo docker stop $(docker ps -q) || true
-            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/prd:latest
+  ssh-connect-ec2-PRD01:
+    needs: [login-and-pull-main]
+    uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker: prd
+    secrets:
+      ec2_host: ${{ secrets.EC2_HOST_PRD01 }}
+      ec2_key: ${{ secrets.EC2_KEY_PRD }}
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
 
-  ssh-connect-ec2_PRD04:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main' 
-    runs-on: ubuntu-latest
-    needs: [login-and-pull]
-    steps: 
-      - name: SSH into EC2 and pull the latest Docker image
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST_PRD04 }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY_PRD }}
-          script: |
-            if ! command -v docker &> /dev/null; then
-              sudo apt update
-              sudo apt install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              sudo systemctl restart docker
-            else
-              echo "Docker install"
-            fi
-            
-            if ! sudo systemctl is-active --quiet docker; then
-              sudo systemctl start docker
-            fi  
+  ssh-connect-ec2-PRD02:
+    needs: [login-and-pull-main]
+    uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker: prd
+    secrets:
+      ec2_host: ${{ secrets.EC2_HOST_PRD02 }}
+      ec2_key: ${{ secrets.EC2_KEY_PRD }}
+      docker_username: ${{ secrets.DOCKER_USERNAME }}    
 
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/prd:latest
-            sudo docker stop $(docker ps -q) || true
-            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/prd:latest
+  ssh-connect-ec2-PRD03:
+    needs: [login-and-pull-main]
+    uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker: prd
+    secrets:
+      ec2_host: ${{ secrets.EC2_HOST_PRD03 }}
+      ec2_key: ${{ secrets.EC2_KEY_PRD }}
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
 
+  ssh-connect-ec2-PRD04:
+    needs: [login-and-pull-main]
+    uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker: prd
+    secrets:
+      ec2_host: ${{ secrets.EC2_HOST_PRD04 }}
+      ec2_key: ${{ secrets.EC2_KEY_PRD }}
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
