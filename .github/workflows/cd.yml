@@ -23,6 +23,8 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/qa:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/qa:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/prd:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/prd:latest
 
   ssh-connect-ec2_QA01:
     if: github.ref == 'refs/heads/QA'
