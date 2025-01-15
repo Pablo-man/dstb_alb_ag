@@ -3,16 +3,14 @@ name: Docker Setup & update application (Reusable workflow)
 on:
 
   workflow_call:
-    inputs:
-      docker:
-        required: true
-        type: string
     secrets:
       docker_username:
         required: true
       ec2_host:
         required: true
       ec2_key:
+        required: true
+      repository_name:
         required: true
 
 jobs:
@@ -41,6 +39,6 @@ jobs:
             sudo systemctl start docker
           fi  
 
-          sudo docker pull ${{ secrets.docker_username }}/${{ inputs.docker }}:latest
+          sudo docker pull ${{ secrets.docker_username }}/${{ secrets.repository_name }}:latest
           sudo docker stop $(docker ps -q) || true
-          sudo docker run -d -p 3000:3000 ${{ secrets.docker_username }}/${{ inputs.docker }}:latest
+          sudo docker run -d -p 3000:3000 ${{ secrets.docker_username }}/${{ secrets.repository_name }}:latest
