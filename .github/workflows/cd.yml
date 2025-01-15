@@ -25,15 +25,15 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
   ssh-connect-ec2_QA01:
+    needs: [login-and-pull]
     if: github.ref == 'refs/heads/QA'
 
-    uses: ./.github/workflows/setup_docker.yml
-    needs: [login-and-pull]
+    uses: ./.github/workflows/setup_docker.yml@QA
     with:
-        secrets:
-          docker_username: ${{ secrets.DOCKER_USERNAME }}
-          ec2_key: ${{ secrets.EC2_KEY_QA }}
-          ec2_host:  ${{ secrets.EC2_HOST_QA01 }}
+    secrets:
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
+      ec2_key: ${{ secrets.EC2_KEY_QA }}
+      ec2_host:  ${{ secrets.EC2_HOST_QA01 }}
         
 
   ssh-connect-ec2_QA02:
