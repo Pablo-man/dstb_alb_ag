@@ -10,8 +10,6 @@ on:
         required: true
       ec2_key:
         required: true
-      docker_repositorie_name:
-        required: true
 
 jobs:
   connect_update:
@@ -39,6 +37,6 @@ jobs:
             sudo systemctl start docker
           fi  
 
-          sudo docker pull ${{ secrets.docker_username }}/${{ secrets.docker_repositorie_name }}:latest
+          sudo docker pull ${{ secrets.docker_username }}/qa:latest
           sudo docker stop $(docker ps -q) || true
-          sudo docker run -d -p 3000:3000 ${{ secrets.docker_username }}/${{ secrets.docker_repositorie_name }}:latest
+          sudo docker run -d -p 3000:3000 ${{ secrets.docker_username }}/qa:latest

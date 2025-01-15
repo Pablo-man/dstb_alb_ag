@@ -46,7 +46,7 @@ jobs:
   ssh-connect-ec2-QA01:
     if: github.ref == 'refs/heads/QA'
     needs: [login-and-pull-qa]
-
+    runs-on: ubuntu-latest
     uses: ./.github/workflows/setup_docker.yml
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_QA01 }}
@@ -56,13 +56,12 @@ jobs:
   ssh-connect-ec2-QA02:
     if: github.ref == 'refs/heads/QA'
     needs: [login-and-pull-qa]
-
+    runs-on: ubuntu-latest
     uses: ./.github/workflows/setup_docker.yml
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_QA02 }}
       ec2_key: ${{ secrets.EC2_KEY_QA }}
       docker_username: ${{ secrets.DOCKER_USERNAME }}
-      docker_repositorie_name: qa
 
   ssh-connect-ec2-PRD01:
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
