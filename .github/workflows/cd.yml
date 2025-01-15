@@ -28,7 +28,7 @@ jobs:
     needs: [login-and-pull]
     if: github.ref == 'refs/heads/QA'
 
-    uses: ./.github/workflows/setup_docker.yml@QA
+    uses: ./.github/workflows/setup_docker.yml
     with:
     secrets:
       docker_username: ${{ secrets.DOCKER_USERNAME }}
