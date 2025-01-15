@@ -5,7 +5,7 @@ on:
   workflow_call:
     inputs:
       docker_repositorie_name:
-        require: true
+        required: true
         type: string
     secrets:
       docker_username:
@@ -43,4 +43,4 @@ jobs:
 
           sudo docker pull ${{ secrets.docker_username }}/${{ inputs.docker_repositorie_name }}:latest
           sudo docker stop $(docker ps -q) || true
-          sudo docker run -d -p 3000:3000 ${{ secrets.docker_username }}/qa:latest
+          sudo docker run -d -p 3000:3000 ${{ secrets.docker_username }}/${{ inputs.docker_repositorie_name }}:latest
