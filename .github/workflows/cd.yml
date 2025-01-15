@@ -34,7 +34,7 @@ jobs:
     steps: 
       - name: SSH into EC2 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
-        with:QA
+        with:
         secrets:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           ec2_key: ${{ secrets.EC2_KEY_QA }}
