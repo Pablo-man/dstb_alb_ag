@@ -46,8 +46,6 @@ jobs:
   ssh-connect-ec2-QA01:
     needs: [login-and-pull-qa]
     uses: ./.github/workflows/setup_docker.yml
-    with:
-      docker: qa
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_QA01 }}
       ec2_key: ${{ secrets.EC2_KEY_QA }}
@@ -57,8 +55,6 @@ jobs:
   ssh-connect-ec2-QA02:
     needs: [login-and-pull-qa]
     uses: ./.github/workflows/setup_docker.yml
-    with:
-      docker: qa
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_QA02 }}
       ec2_key: ${{ secrets.EC2_KEY_QA }}
@@ -68,8 +64,6 @@ jobs:
   ssh-connect-ec2-PRD01:
     needs: [login-and-pull-main]
     uses: ./.github/workflows/setup_docker.yml
-    with:
-      docker: prd
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_PRD01 }}
       ec2_key: ${{ secrets.EC2_KEY_PRD }}
@@ -79,8 +73,6 @@ jobs:
   ssh-connect-ec2-PRD02:
     needs: [login-and-pull-main]
     uses: ./.github/workflows/setup_docker.yml
-    with:
-      docker: prd
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_PRD02 }}
       ec2_key: ${{ secrets.EC2_KEY_PRD }}
@@ -90,8 +82,6 @@ jobs:
   ssh-connect-ec2-PRD03:
     needs: [login-and-pull-main]
     uses: ./.github/workflows/setup_docker.yml
-    with:
-      docker: prd
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_PRD03 }}
       ec2_key: ${{ secrets.EC2_KEY_PRD }}
@@ -101,8 +91,6 @@ jobs:
   ssh-connect-ec2-PRD04:
     needs: [login-and-pull-main]
     uses: ./.github/workflows/setup_docker.yml
-    with:
-      docker: prd
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_PRD04 }}
       ec2_key: ${{ secrets.EC2_KEY_PRD }}
