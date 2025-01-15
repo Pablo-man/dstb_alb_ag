@@ -44,7 +44,6 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/prd:latest
 
   ssh-connect-ec2-QA01:
-    if: github.ref == 'refs/heads/QA'
     needs: [login-and-pull-qa]
     uses: ./.github/workflows/setup_docker.yml
     with:
@@ -55,7 +54,6 @@ jobs:
       docker_username: ${{ secrets.DOCKER_USERNAME }}
 
   ssh-connect-ec2-QA02:
-    if: github.ref == 'refs/heads/QA'
     needs: [login-and-pull-qa]
     uses: ./.github/workflows/setup_docker.yml
     with:
@@ -66,36 +64,40 @@ jobs:
       docker_username: ${{ secrets.DOCKER_USERNAME }}
 
   ssh-connect-ec2-PRD01:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
     needs: [login-and-pull-main]
     uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker: prd
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_PRD01 }}
       ec2_key: ${{ secrets.EC2_KEY_PRD }}
       docker_username: ${{ secrets.DOCKER_USERNAME }}
 
   ssh-connect-ec2-PRD02:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
     needs: [login-and-pull-main]
     uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker: prd
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_PRD02 }}
       ec2_key: ${{ secrets.EC2_KEY_PRD }}
       docker_username: ${{ secrets.DOCKER_USERNAME }}    
 
   ssh-connect-ec2-PRD03:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
     needs: [login-and-pull-main]
     uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker: prd
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_PRD03 }}
       ec2_key: ${{ secrets.EC2_KEY_PRD }}
       docker_username: ${{ secrets.DOCKER_USERNAME }}
 
   ssh-connect-ec2-PRD04:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
     needs: [login-and-pull-main]
     uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker: prd
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_PRD04 }}
       ec2_key: ${{ secrets.EC2_KEY_PRD }}
