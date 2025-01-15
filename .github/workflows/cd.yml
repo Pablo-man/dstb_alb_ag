@@ -7,7 +7,8 @@ on:
     branches: ["main"]
 
 jobs:
-  login-and-pull:
+  login-and-pull-qa:
+    if: github.ref == 'refs/heads/QA'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -23,13 +24,29 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/qa:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/qa:latest
+
+  login-and-pull-main:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main' 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+ 
+      - name: Build and push Docker image
+        run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/prd:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/prd:latest
 
-  ssh-connect-ec2_QA01:
+  ssh-connect-ec2-QA01:
     if: github.ref == 'refs/heads/QA'
     runs-on: ubuntu-latest
-    needs: [login-and-pull]
+    needs: [login-and-pull-qa]
     steps: 
       - name: SSH into EC2 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
@@ -57,10 +74,10 @@ jobs:
             sudo docker stop $(docker ps -q) || true
             sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
-  ssh-connect-ec2_QA02:
+  ssh-connect-ec2-QA02:
     if: github.ref == 'refs/heads/QA'
     runs-on: ubuntu-latest
-    needs: [login-and-pull]
+    needs: [login-and-pull-qa]
     steps: 
       - name: SSH into EC2 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
@@ -88,10 +105,10 @@ jobs:
             sudo docker stop $(docker ps -q) || true
             sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/qa:latest
 
-  ssh-connect-ec2_PRD01:
+  ssh-connect-ec2-PRD01:
     if: github.event_name == 'pull_request' && github.base_ref == 'main' 
     runs-on: ubuntu-latest
-    needs: [login-and-pull]
+    needs: [login-and-pull-main]
     steps: 
       - name: SSH into EC2 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
@@ -119,10 +136,10 @@ jobs:
             sudo docker stop $(docker ps -q) || true
             sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/prd:latest
 
-  ssh-connect-ec2_PRD02:
+  ssh-connect-ec2-PRD02:
     if: github.event_name == 'pull_request' && github.base_ref == 'main' 
     runs-on: ubuntu-latest
-    needs: [login-and-pull]
+    needs: [login-and-pull-main]
     steps: 
       - name: SSH into EC2 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
@@ -150,10 +167,10 @@ jobs:
             sudo docker stop $(docker ps -q) || true
             sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/prd:latest
 
-  ssh-connect-ec2_PRD03:
+  ssh-connect-ec2-PRD03:
     if: github.event_name == 'pull_request' && github.base_ref == 'main' 
     runs-on: ubuntu-latest
-    needs: [login-and-pull]
+    needs: [login-and-pull-main]
     steps: 
       - name: SSH into EC2 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
@@ -181,10 +198,10 @@ jobs:
             sudo docker stop $(docker ps -q) || true
             sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/prd:latest
 
-  ssh-connect-ec2_PRD04:
+  ssh-connect-ec2-PRD04:
     if: github.event_name == 'pull_request' && github.base_ref == 'main' 
     runs-on: ubuntu-latest
-    needs: [login-and-pull]
+    needs: [login-and-pull-main]
     steps: 
       - name: SSH into EC2 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
