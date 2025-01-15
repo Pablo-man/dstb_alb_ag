@@ -26,34 +26,19 @@ jobs:
 
   ssh-connect-ec2_QA01:
     if: github.ref == 'refs/heads/QA'
+
+    uses: Pablo-man/dstb_alb_ag/.github/workflows/setup_docker.yml@
+
     runs-on: ubuntu-latest
     needs: [login-and-pull]
     steps: 
       - name: SSH into EC2 and pull the latest Docker image
         uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST_QA01 }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY_QA }}
-          script: |
-            if ! command -v docker &> /dev/null; then
-              sudo apt update
-              sudo apt install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              sudo systemctl restart docker
-            else
-              echo "Docker install"
-            fi
-            
-            if ! sudo systemctl is-active --quiet docker; then
-              sudo systemctl start docker
-            fi  
-
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/qa:latest
-            sudo docker stop $(docker ps -q) || true
-            sudo docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/qa:latest
+        with:QA
+        secrets:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          ec2_key: ${{ secrets.EC2_KEY_QA }}
+          ec2_host:  ${{ secrets.EC2_HOST_QA01 }}
 
   ssh-connect-ec2_QA02:
     if: github.ref == 'refs/heads/QA'
