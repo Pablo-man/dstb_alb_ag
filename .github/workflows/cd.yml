@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     uses: ./.github/workflows/setup_docker.yml
     with:
-      docker: qa
+      docker: qa1
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_QA01 }}
       ec2_key: ${{ secrets.EC2_KEY_QA }}
