@@ -46,27 +46,29 @@ jobs:
   ssh-connect-ec2-QA01:
     if: github.ref == 'refs/heads/QA'
     needs: [login-and-pull-qa]
-
-    uses: ./.github/workflows/setup_docker.yml
-    with:
-      docker_repositorie_name: "qa"
-    secrets:
-      ec2_host: ${{ secrets.EC2_HOST_QA01 }}
-      ec2_key: ${{ secrets.EC2_KEY_QA }}
-      docker_username: ${{ secrets.DOCKER_USERNAME }}
+    steps:
+      - name:
+        uses: ./.github/workflows/setup_docker.yml
+        with:
+          docker_repositorie_name: "qa"
+        secrets:
+          ec2_host: ${{ secrets.EC2_HOST_QA01 }}
+          ec2_key: ${{ secrets.EC2_KEY_QA }}
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
 
   ssh-connect-ec2-QA02:
     if: github.ref == 'refs/heads/QA'
     runs-on: ubuntu-latest
     needs: [login-and-pull-qa]
-
-    uses: ./.github/workflows/setup_docker.yml
-    with:
-      docker_repositorie_name: 'qa'
-    secrets:
-      ec2_host: ${{ secrets.EC2_HOST_QA02 }}
-      ec2_key: ${{ secrets.EC2_KEY_QA }}
-      docker_username: ${{ secrets.DOCKER_USERNAME }}
+    steps:
+      - name:
+        uses: ./.github/workflows/setup_docker.yml
+        with:
+          docker_repositorie_name: 'qa'
+        secrets:
+          ec2_host: ${{ secrets.EC2_HOST_QA02 }}
+          ec2_key: ${{ secrets.EC2_KEY_QA }}
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
 
   ssh-connect-ec2-PRD01:
     if: github.event_name == 'pull_request' && github.base_ref == 'main' 
