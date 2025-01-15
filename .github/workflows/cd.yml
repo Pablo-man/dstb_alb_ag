@@ -48,6 +48,8 @@ jobs:
     needs: [login-and-pull-qa]
 
     uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker_repositorie_name: qa
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_QA01 }}
       ec2_key: ${{ secrets.EC2_KEY_QA }}
@@ -59,6 +61,8 @@ jobs:
     needs: [login-and-pull-qa]
 
     uses: ./.github/workflows/setup_docker.yml
+    with:
+      docker_repositorie_name: qa
     secrets:
       ec2_host: ${{ secrets.EC2_HOST_QA02 }}
       ec2_key: ${{ secrets.EC2_KEY_QA }}
