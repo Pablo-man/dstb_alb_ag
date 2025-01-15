@@ -1,0 +1,42 @@
+name: Docker Setup & update application (Reusable workflow)
+
+on:
+
+  workflow_call:
+    secrets:
+      docker_username:
+        required: true
+      ec2_host:
+        required: true
+      ec2_key:
+        required: true
+
+jobs:
+  connect_update:
+    runs-on: ubuntu-latest
+    steps: 
+        - name: SSH into EC2 and pull the latest Docker image
+          uses: appleboy/ssh-action@v1.2.0
+          with:
+            host: ${{ secrets.ec2_host }}
+            username: ubuntu
+            key: ${{ secrets.ec2_key }}
+            script: |
+              if ! command -v docker &> /dev/null; then
+                sudo apt update
+                sudo apt install -y docker.io
+                sudo systemctl start docker
+                sudo systemctl enable docker
+                sudo usermod -aG docker $USER
+                sudo systemctl restart docker
+              else
+                echo "Docker install"
+              fi
+              
+              if ! sudo systemctl is-active --quiet docker; then
+                sudo systemctl start docker
+              fi  
+
+              sudo docker pull ${{ secrets.docker_username }}/qa:latest
+              sudo docker stop $(docker ps -q) || true
+              sudo docker run -d -p 3000:3000 ${{ secrets.docker_username }}/qa:latest
