@@ -1,4 +1,4 @@
-# Architecture
+## Architecture
 ![Architecture Diagram](./public/img/architecture_diagram.png "diagram")
 
 # Configuration on AWS
