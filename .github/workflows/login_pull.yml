@@ -21,7 +21,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.docker_username }}
-          password: ${{ secrets.ocker_password }}
+          password: ${{ secrets.docker_password }}
  
       - name: Build and push Docker image
         run: |
