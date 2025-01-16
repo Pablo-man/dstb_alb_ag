@@ -1,7 +1,6 @@
 name: Docker Setup & update application (Reusable workflow)
 
 on:
-
   workflow_call:
     secrets:
       docker_username:
